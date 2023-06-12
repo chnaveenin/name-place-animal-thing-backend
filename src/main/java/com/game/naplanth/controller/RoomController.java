@@ -4,9 +4,12 @@ import com.game.naplanth.RoomRepo;
 import com.game.naplanth.model.Room;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @CrossOrigin(origins="*")
@@ -22,7 +25,11 @@ public class RoomController {
 
     @GetMapping(value="/room/{roomid}")
     public Room getRoom(@PathVariable String roomid) {
-        return repo.findByRoomid(roomid);
+        Room r = repo.findByRoomid(roomid);
+        if (r != null)
+            return r;
+        else
+            throw new ResponseStatusException(NOT_FOUND, "Unable to find resource");
     }
 
     @PostMapping(value="/create-room")
