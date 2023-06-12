@@ -3,10 +3,7 @@ package com.game.naplanth.controller;
 import com.game.naplanth.RoomRepo;
 import com.game.naplanth.model.Room;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,25 +15,28 @@ public class RoomController {
     @Autowired
     RoomRepo repo;
 
-    @RequestMapping(value="/")
-    public String test() {
-        return "Working";
-    }
-
     @GetMapping(value="/rooms")
     public List<Room> getAllRooms() {
-        System.out.println("in rooms");
-        List<Room> rs = repo.findAll();
-        System.out.println(rs);
         return repo.findAll();
     }
 
-    @GetMapping(value="/insert")
-    public void insert() {
-        Room temp = new Room();
-        temp.setRoomid("hello");
-        String[] st = {"gani", "naveen"};
-        temp.setParticipants(st);
-        repo.insert(temp);
+    @GetMapping(value="/room/{roomid}")
+    public Room getRoom(@PathVariable String roomid) {
+        return repo.findByRoomid(roomid);
+    }
+
+    @PostMapping(value="/create-room")
+    public Room createRoom(@RequestBody Room room) {
+        return repo.save(room);
+    }
+
+    @PatchMapping(value="/join-room/{roomid}")
+    public Room joinRoom(@PathVariable String roomid, @RequestBody Room.Participant participant) {
+        Room room = repo.findByRoomid(roomid);
+        if (room != null) {
+            room.addParticipant(participant);
+            return repo.save(room);
+        }
+        return null;
     }
 }
