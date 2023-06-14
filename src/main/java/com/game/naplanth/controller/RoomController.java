@@ -44,6 +44,7 @@ public class RoomController {
             room.addParticipant(participant);
             return repo.save(room);
         }
-        return null;
+        else
+            throw new ResponseStatusException(NOT_FOUND, "Unable to find resource");
     }
 }
